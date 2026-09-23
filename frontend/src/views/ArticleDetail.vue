@@ -78,7 +78,14 @@ async function fetchArticle() {
 }
 
 function goBack() {
-  router.push('/')
+  // 回到进入详情时的列表地址（含标签/搜索/分页），保证标签入口、
+  // 结果标题和列表请求与返回后的地址一致；直接访问详情时退回首页。
+  const back = route.query.back
+  if (back && typeof back === 'string' && back.startsWith('/')) {
+    router.push(back)
+  } else {
+    router.push('/')
+  }
 }
 
 function formatDate(dateStr) {

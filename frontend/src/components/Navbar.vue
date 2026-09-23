@@ -40,7 +40,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { ElMessage } from 'element-plus'
@@ -51,6 +51,11 @@ const route = useRoute()
 const authStore = useAuthStore()
 
 const searchQuery = ref(route.query.search || '')
+
+// 浏览器前进/后退、清空条件后，让输入框与地址栏保持一致
+watch(() => route.query.search, (value) => {
+  searchQuery.value = value || ''
+})
 
 function goHome() {
   router.push('/')
@@ -72,14 +77,25 @@ function handleLogout() {
 
 function handleSearch() {
   const query = searchQuery.value.trim()
-  if (query) {
-    router.push({ path: '/', query: { search: query } })
+  const nextQuery = {}
+  // 保留当前标签筛选，只替换搜索条件并回到第一页
+  if (route.query.tag) {
+    nextQuery.tag = route.query.tag
   }
+  if (query) {
+    nextQuery.search = query
+  }
+  router.push({ path: '/', query: nextQuery })
 }
 
 function handleClear() {
   if (route.path === '/' && route.query.search) {
-    router.push({ path: '/', query: {} })
+    // 只移除搜索条件，保留标签等其他筛选
+    const query = {}
+    if (route.query.tag) {
+      query.tag = route.query.tag
+    }
+    router.push({ path: '/', query })
   }
 }
 </script>

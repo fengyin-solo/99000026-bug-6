@@ -1,6 +1,11 @@
 <template>
   <div class="tag-filter">
     <h4 class="filter-title">标签筛选</h4>
+    <div v-if="loading" class="filter-status">标签加载中…</div>
+    <div v-else-if="error" class="filter-status">
+      <span>标签加载失败</span>
+      <el-button link type="primary" size="small" @click="$emit('retry')">重试</el-button>
+    </div>
     <div class="tag-list">
       <el-tag
         :type="selectedTag === null ? '' : 'info'"
@@ -33,10 +38,18 @@ defineProps({
   selectedTag: {
     type: String,
     default: null
+  },
+  loading: {
+    type: Boolean,
+    default: false
+  },
+  error: {
+    type: Boolean,
+    default: false
   }
 })
 
-const emit = defineEmits(['select'])
+const emit = defineEmits(['select', 'retry'])
 
 function selectTag(tag) {
   emit('select', tag)
@@ -52,6 +65,15 @@ function selectTag(tag) {
   font-size: 14px;
   color: #606266;
   margin-bottom: 10px;
+}
+
+.filter-status {
+  font-size: 13px;
+  color: #909399;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .tag-list {

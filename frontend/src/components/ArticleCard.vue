@@ -31,6 +31,10 @@ const props = defineProps({
   highlightQuery: {
     type: String,
     default: ''
+  },
+  backPath: {
+    type: String,
+    default: ''
   }
 })
 
@@ -38,7 +42,10 @@ const emit = defineEmits(['tag-click'])
 const router = useRouter()
 
 function goToArticle() {
-  router.push(`/article/${props.article.id}`)
+  router.push({
+    path: `/article/${props.article.id}`,
+    query: props.backPath ? { back: props.backPath } : {}
+  })
 }
 
 function filterByTag(tag) {
